@@ -9,8 +9,8 @@ for filename in os.listdir(directory):
         print(os.path.join(directory, filename))
         img = sitk.ReadImage(os.path.join(directory, filename))
 
-        ccfilt = sitk.ConnectedComponentImageFilter
-        ccfilt.Execute(img)
+        ccfilt = sitk.ConnectedComponentImageFilter()
+        ccImg = ccfilt.Execute(img)
 
         continue
     else:
