@@ -28,7 +28,7 @@ class ImagePostProcessing(pymia_fltr.IFilter):
         Returns:
             sitk.Image: The post-processed image.
         """
-
+        # todo: ConnectedcomponentImageFilter
         # todo: replace this filter by a post-processing - or do we need post-processing at all?
         warnings.warn('No post-processing implemented. Can you think about something?')
 

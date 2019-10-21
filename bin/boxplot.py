@@ -22,7 +22,7 @@ def main():
     # alternative: instead of manually loading/reading the csv file you could also use the pandas package
     # but you will need to install it first ('pip install pandas') and import it to this file ('import pandas as pd')
 
-    data = pd.read_csv('bin/mia-result/results.csv', delimiter=';')  # , dtype={'ID': int, 'LABEL': str, 'DICE': float, 'HDRFDST': float}
+    data = pd.read_csv('mia-result/results.csv', delimiter=';')  # , dtype={'ID': int, 'LABEL': str, 'DICE': float, 'HDRFDST': float}
 
     data.boxplot(by='LABEL', column='DICE')
     plt.show()
