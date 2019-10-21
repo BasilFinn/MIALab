@@ -7,7 +7,7 @@ import datetime
 import os
 import sys
 import timeit
-import warnings
+import random
 
 import SimpleITK as sitk
 import sklearn.ensemble as sk_ensemble
@@ -45,6 +45,10 @@ def main(result_dir: str, data_atlas_dir: str, data_train_dir: str, data_test_di
         - Evaluation of the segmentation
     """
 
+    seed = 31
+    random.seed(seed)
+    np.random.seed(seed)
+
     # load atlas images
     putil.load_atlas_images(data_atlas_dir)
 
@@ -69,10 +73,10 @@ def main(result_dir: str, data_atlas_dir: str, data_train_dir: str, data_test_di
     data_train = np.concatenate([img.feature_matrix[0] for img in images])
     labels_train = np.concatenate([img.feature_matrix[1] for img in images]).squeeze()
 
-    warnings.warn('Random forest parameters not properly set.')
+    # warnings.warn('Random forest parameters not properly set.')
     forest = sk_ensemble.RandomForestClassifier(max_features=images[0].feature_matrix[0].shape[1],
-                                                n_estimators=12,
-                                                max_depth=15)
+                                                n_estimators=18,
+                                                max_depth=20)
 
     start_time = timeit.default_timer()
     forest.fit(data_train, labels_train)
