@@ -1,7 +1,5 @@
-import os
-import SimpleITK as sitk
 import matplotlib.pyplot as plt
-
+import SimpleITK as sitk
 
 def remove_keymap_conflicts(new_keys_set):
     for prop in plt.rcParams:
@@ -12,13 +10,16 @@ def remove_keymap_conflicts(new_keys_set):
                 keys.remove(key)
 
 
-def multi_slice_viewer(volume):
+def multi_slice_viewer(img):
+    volume = sitk.GetArrayFromImage(img)
     remove_keymap_conflicts({'j', 'k'})
-    fig,ax = plt.subplots()
+    fig, ax = plt.subplots()
     ax.volume = volume
     ax.index = volume.shape[0] // 2
     ax.imshow(volume[ax.index])
     fig.canvas.mpl_connect('key_press_event', process_key)
+
+    plt.show()
 
 
 def process_key(event):
@@ -43,19 +44,17 @@ def next_slice(ax):
     ax.images[0].set_array(volume[ax.index])
 
 
-directory = "mia-result\\2019-10-21-13-52-08"
-
-for filename in os.listdir(directory):
-    if filename.endswith("G.mha"):
-        print(os.path.join(directory, filename))
-        img = sitk.ReadImage(os.path.join(directory, filename))
-
-        np_img = sitk.GetArrayFromImage(img)
-        multi_slice_viewer(np_img)
-        plt.show()
-
-        continue
-    else:
-        continue
-
-
+# directory = "mia-result\\testData"
+#
+# for filename in os.listdir(directory):
+#     if filename.endswith("G.mha"):
+#         print(os.path.join(directory, filename))
+#         img = sitk.ReadImage(os.path.join(directory, filename))
+#
+#         np_img = sitk.GetArrayFromImage(img)
+#         multi_slice_viewer(np_img)
+#         # plt.show()
+#
+#         continue
+#     else:
+#         continue
