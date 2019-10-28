@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import SimpleITK as sitk
 
+
 def remove_keymap_conflicts(new_keys_set):
     for prop in plt.rcParams:
         if prop.startswith('keymap.'):
@@ -18,7 +19,7 @@ def multi_slice_viewer(img):
     ax.index = volume.shape[0] // 2
     ax.imshow(volume[ax.index])
     fig.canvas.mpl_connect('key_press_event', process_key)
-
+    plt.title('Slice: %i of %i' % (ax.index,ax.volume.shape[0]))
     plt.show()
 
 
@@ -29,6 +30,7 @@ def process_key(event):
         previous_slice(ax)
     elif event.key == 'k':
         next_slice(ax)
+    plt.title('Slice: %i of %i' % (ax.index, ax.volume.shape[0]))
     fig.canvas.draw()
 
 
