@@ -11,12 +11,19 @@ for filename in os.listdir(directory):
         print(os.path.join(directory, filename))
         img = sitk.ReadImage(os.path.join(directory, filename))
 
-        ccFilt = sitk.ConnectedComponentImageFilter()
-        ccImg = ccFilt.Execute(img)
-        arrCC = np.transpose(sitk.GetArrayFromImage(ccImg), [2, 1, 0])
 
-        sFilt = sitk.LabelStatisticsImageFilter()
-        sFilt.Execute(img, ccFilt)
+        imgNew = sitk.Image(img)
+        imgNew.CopyInformation(img)
+        imgNew = imgNew * 0
+
+        for labelIdx in range(1, 6):
+            ccFilt = sitk.ConnectedComponentImageFilter()       # generate multiple labels
+            ccImg = ccFilt.Execute(img == labelIdx)
+            rFilt = sitk.RelabelComponentImageFilter()          # sort labels by size
+            rImg = rFilt.Execute(ccImg)
+            bImg = (rImg == 1) * labelIdx                       # Take biggest connected component
+            imgNew = imgNew + bImg
+
 
         # - 0 (background)
         # - 1 (white matter)
@@ -26,14 +33,9 @@ for filename in os.listdir(directory):
         # - 5 (Thalamus)
         labelNames = ["background", "white matter", "grey matter", "hippocampus", "amygdala", "thalamus"]
 
+        # BinaryThresholt(img, 4, 4 ,1 ,0) 4--> wished label, 1-->goal label, 0-->background
         #TODO: imagestatisticsfilter (for sorting labels)
-        #TODO: Make loop for all labels
-        for idx in range(3, 6):
-            imgHy = (img == idx)
-            ccFiltHy = sitk.ConnectedComponentImageFilter()
-            ccFiltHy.Execute(imgHy)
-            print(labelNames[idx])
-            print(ccFiltHy.GetObjectCount())
+
 
 
 
