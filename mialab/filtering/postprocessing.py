@@ -20,7 +20,6 @@ class ImagePostProcessing(pymia_fltr.IFilter):
 
     def execute(self, image: sitk.Image, params: pymia_fltr.IFilterParams = None) -> sitk.Image:
         """Registers an image.
-
         Args:
             image (sitk.Image): The image.
             params (IFilterParams): The parameters.
@@ -28,11 +27,26 @@ class ImagePostProcessing(pymia_fltr.IFilter):
         Returns:
             sitk.Image: The post-processed image.
         """
-        # todo: ConnectedcomponentImageFilter
-        # todo: replace this filter by a post-processing - or do we need post-processing at all?
-        warnings.warn('No post-processing implemented. Can you think about something?')
 
-        return image
+        imgNew = sitk.Image(image)
+        imgNew.CopyInformation(image)
+        imgNew = imgNew * 0
+
+        componentList = [1, 1, 2, 1, 1]
+
+        for labelIdx in range(1, 6):
+            ccFilt = sitk.ConnectedComponentImageFilter()  # generate multiple labels
+            ccImg = ccFilt.Execute(image == labelIdx)
+            rFilt = sitk.RelabelComponentImageFilter()  # sort labels by size
+            rImg = rFilt.Execute(ccImg)
+
+            for i in range(0, componentList[labelIdx - 1]):  # take n biggest components
+                print(i + 1)
+                bImg = (rImg == i + 1) * labelIdx
+                imgNew = imgNew + bImg
+
+        return imgNew
+
 
     def __str__(self):
         """Gets a printable string representation.
