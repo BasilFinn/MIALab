@@ -16,13 +16,18 @@ for filename in os.listdir(directory):
         imgNew.CopyInformation(img)
         imgNew = imgNew * 0
 
+        componentList = [1, 1, 2, 1, 1]
+
         for labelIdx in range(1, 6):
             ccFilt = sitk.ConnectedComponentImageFilter()       # generate multiple labels
             ccImg = ccFilt.Execute(img == labelIdx)
             rFilt = sitk.RelabelComponentImageFilter()          # sort labels by size
             rImg = rFilt.Execute(ccImg)
-            bImg = (rImg == 1) * labelIdx                       # Take biggest connected component
-            imgNew = imgNew + bImg
+
+            for i in range(0, componentList[labelIdx-1]):       # take n biggest components
+                print(i+1)
+                bImg = (rImg == i+1) * labelIdx
+                imgNew = imgNew + bImg
 
 
         # - 0 (background)
