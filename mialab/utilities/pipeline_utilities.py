@@ -276,6 +276,7 @@ def post_process(img: structure.BrainImage, segmentation: sitk.Image, probabilit
     if kwargs.get('simple_post', False):
         pipeline.add_filter(fltr_postp.ImagePostProcessing())
     if kwargs.get('crf_post', False):
+        print("Enter CRF settings")
         pipeline.add_filter(fltr_postp.DenseCRF())
         pipeline.set_param(fltr_postp.DenseCRFParams(img.images[structure.BrainImageTypes.T1w],
                                                      img.images[structure.BrainImageTypes.T2w],

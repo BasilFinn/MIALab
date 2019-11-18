@@ -22,7 +22,7 @@ def main():
     # alternative: instead of manually loading/reading the csv file you could also use the pandas package
     # but you will need to install it first ('pip install pandas') and import it to this file ('import pandas as pd')
 
-    data_org = pd.read_csv('mia-result/2019-11-04-11-17-42/results.csv', delimiter=';')  # , dtype={'ID': int, 'LABEL': str, 'DICE': float, 'HDRFDST': float}
+    data_org = pd.read_csv('mia-result/2019-11-18-10-40-09_CRF/results.csv', delimiter=';')  # , dtype={'ID': int, 'LABEL': str, 'DICE': float, 'HDRFDST': float}
     data   = data_org.loc[data_org['ID'].str.contains('-PP')==False]
     dataPP = data_org.loc[data_org['ID'].str.contains('-PP')]
     dataPP['LABEL'] = dataPP['LABEL'] + "-PP"

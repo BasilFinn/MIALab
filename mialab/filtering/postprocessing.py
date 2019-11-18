@@ -47,7 +47,8 @@ class DenseCRF(pymia_fltr.IFilter):
         Returns:
             sitk.Image: The filtered image.
         """
-
+        print("Execute dense CRF")
+        print("Params: ", params)
         if params is None:
             raise ValueError('Parameters are required')
 
@@ -64,10 +65,12 @@ class DenseCRF(pymia_fltr.IFilter):
         img_proba = np.rollaxis(img_proba, 3, 0)
 
         d = crf.DenseCRF(x * y * z, no_labels)  # width, height, nlabels
+        img_proba = np.ascontiguousarray(img_proba)
         U = crf_util.unary_from_softmax(img_proba)
         d.setUnaryEnergy(U)
 
         stack = np.stack([img_t2, img_ir], axis=3)
+        stack = np.ascontiguousarray(stack)
 
         # Create the pairwise bilateral term from the above images.
         # The two `s{dims,chan}` parameters are model hyper-parameters defining
@@ -131,6 +134,13 @@ class ImagePostProcessing(pymia_fltr.IFilter):
         Returns:
             sitk.Image: The post-processed image.
         """
+
+        # para = DenseCRFParams(image, image, image)
+        # filtCRF = DenseCRF
+        # image = filtCRF.execute(filtCRF, image, para)
+
+        # def __init__(self, img_t1: sitk.Image, img_t2: sitk.Image, img_proba: sitk.Image):
+        # def execute(self, image: sitk.Image, params: DenseCRFParams = None) -> sitk.Image:
 
         # todo: replace this filter by a post-processing. Check out the DenseCRF class above!
         warnings.warn('No post-processing implemented. See mialab.filtering.postprocessing.DenseCRF.')
