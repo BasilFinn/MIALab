@@ -27,13 +27,18 @@ def main():
     dataPP = data_org.loc[data_org['ID'].str.contains('-PP')]
     dataPP['LABEL'] = dataPP['LABEL'] + "-PP"
 
-    result = pd.concat([data, dataPP])
+    frame = [data, dataPP]
+    result = pd.concat(frame)
 
     plt.figure(1)
     result.boxplot(by='LABEL', column='DICE')
+    plt.title("N=10")
+    plt.suptitle("Boxplot DICE")
 
     plt.figure(2)
     result.boxplot(by='LABEL', column='HDRFDST')
+    plt.title("N=10")
+    plt.suptitle("Boxplot Hausdorff")
 
     # data.boxplot(by='LABEL', column='DICE')
     # dataPP.boxplot(by='LABEL', column='DICE')
