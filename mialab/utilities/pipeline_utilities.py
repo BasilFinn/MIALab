@@ -67,7 +67,7 @@ class FeatureExtractor:
         Returns:
             structure.BrainImage: The image with extracted features.
         """
-        # todoo: add T2w features
+        # todo: add T2w features
         # warnings.warn('No features from T2-weighted image extracted.')
 
         if self.coordinates_feature:
@@ -194,7 +194,7 @@ def pre_process(id_: str, paths: dict, **kwargs) -> structure.BrainImage:
     if kwargs.get('registration_pre', False):
         pipeline_brain_mask.add_filter(fltr_prep.ImageRegistration())
         pipeline_brain_mask.set_param(fltr_prep.ImageRegistrationParameters(atlas_t1, img.transformation, True),
-                              len(pipeline_brain_mask.filters) - 1)
+                                      len(pipeline_brain_mask.filters) - 1)
 
     # execute pipeline on the brain mask image
     img.images[structure.BrainImageTypes.BrainMask] = pipeline_brain_mask.execute(
