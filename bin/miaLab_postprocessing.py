@@ -5,9 +5,18 @@ import miaLab_sliceViewer as sv
 import matplotlib.pyplot as plt
 
 directory = "mia-result\\2019-10-21-12-03-21"
+directory_probability = "mia-result\\probabilities"
 
 for filename in os.listdir(directory):
-    if filename.endswith("G.mha"):
+    if filename.endswith("SEG.mha"):
+        # get corresponding probability file
+        for f in os.listdir(directory_probability):
+            if f.startswith(filename[0:6]):
+                filename_probability = f
+
+
+        print(os.path.join(directory_probability, filename_probability))
+        probability = sitk.ReadImage(os.path.join(directory_probability, filename_probability))
         print(os.path.join(directory, filename))
         img = sitk.ReadImage(os.path.join(directory, filename))
 
