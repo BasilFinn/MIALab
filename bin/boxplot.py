@@ -22,7 +22,7 @@ def main():
     # alternative: instead of manually loading/reading the csv file you could also use the pandas package
     # but you will need to install it first ('pip install pandas') and import it to this file ('import pandas as pd')
 
-    data_org = pd.read_csv('mia-result/2019-11-18-10-40-09_CRF/results.csv', delimiter=';')  # , dtype={'ID': int, 'LABEL': str, 'DICE': float, 'HDRFDST': float}
+    data_org = pd.read_csv('mia-result/2019-11-25-11-55-50_CRF/results.csv', delimiter=';')  # , dtype={'ID': int, 'LABEL': str, 'DICE': float, 'HDRFDST': float}
     data   = data_org.loc[data_org['ID'].str.contains('-PP')==False]
     dataPP = data_org.loc[data_org['ID'].str.contains('-PP')]
     dataPP['LABEL'] = dataPP['LABEL'] + "-PP"
@@ -34,6 +34,12 @@ def main():
     result.boxplot(by='LABEL', column='DICE')
     plt.title("N=10")
     plt.suptitle("Boxplot DICE")
+
+    # bp = df.boxplot(by="models", ax=ax_new, layout=(2, 2), figsize=(6, 8))
+    # [ax_tmp.set_xlabel('') for ax_tmp in ax_new.reshape(-1)]
+    # [ax_tmp.set_ylim(-2, 2) for ax_tmp in ax_new[1]]
+    # fig.suptitle('New title here')
+    # plt.show()
 
     plt.figure(2)
     result.boxplot(by='LABEL', column='HDRFDST')
