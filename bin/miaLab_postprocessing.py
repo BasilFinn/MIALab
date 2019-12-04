@@ -20,6 +20,20 @@ for filename in os.listdir(directory):
         print(os.path.join(directory, filename))
         img = sitk.ReadImage(os.path.join(directory, filename))
 
+        p = sitk.GetArrayFromImage(probability)
+        i = sitk.GetArrayFromImage(img)
+
+        # Delete 1st maximum
+        for x in range(p.shape[0]):
+            for y in range(p.shape[1]):
+                for z in range(p.shape[2]):
+                    idx = i[x, y, z]
+                    p[x, y, z, idx] = 0
+
+        # Select new maximum in probability
+        p2 = np.argmax(p, axis=-1)
+        img2 = sitk.GetImageFromArray(p2)
+
 
         imgNew = sitk.Image(img)
         imgNew.CopyInformation(img)
@@ -28,7 +42,7 @@ for filename in os.listdir(directory):
         componentList = [1, 1, 2, 1, 1]
 
         for labelIdx in range(1, 6):
-            ccFilt = sitk.ConnectedComponentImageFilter()       # generate multiple labels
+            ccFilt = sitk.ConnectedComponentImageFilter()       # generate labels for all cc within anatomy label
             ccImg = ccFilt.Execute(img == labelIdx)
             rFilt = sitk.RelabelComponentImageFilter()          # sort labels by size
             rImg = rFilt.Execute(ccImg)
@@ -37,6 +51,8 @@ for filename in os.listdir(directory):
                 print(i+1)
                 bImg = (rImg == i+1) * labelIdx
                 imgNew = imgNew + bImg
+
+
 
 
         # - 0 (background)
