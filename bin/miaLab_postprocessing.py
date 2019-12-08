@@ -30,7 +30,7 @@ for filename in os.listdir(directory):
                     idx = i[x, y, z]
                     p[x, y, z, idx] = 0
 
-        # Select new maximum in probability
+        # Select new maximum in probability (2nd most probable label)
         p2 = np.argmax(p, axis=-1)
         img2 = sitk.GetImageFromArray(p2)
 
@@ -38,8 +38,9 @@ for filename in os.listdir(directory):
         imgNew = sitk.Image(img)
         imgNew.CopyInformation(img)
         imgNew = imgNew * 0
+        tmpImg = sitk.Image(img)*0
 
-        componentList = [1, 1, 2, 1, 1]
+        componentList = [ 1, 1, 2, 1, 1]                        # N components for label 1-5
 
         for labelIdx in range(1, 6):
             ccFilt = sitk.ConnectedComponentImageFilter()       # generate labels for all cc within anatomy label
@@ -47,10 +48,32 @@ for filename in os.listdir(directory):
             rFilt = sitk.RelabelComponentImageFilter()          # sort labels by size
             rImg = rFilt.Execute(ccImg)
 
+            tmpImg = sitk.Image(img) * 0
             for i in range(0, componentList[labelIdx-1]):       # take n biggest components
                 print(i+1)
-                bImg = (rImg == i+1) * labelIdx
-                imgNew = imgNew + bImg
+                tmpImg = tmpImg+(rImg == i+1)
+
+            imgNew = imgNew + tmpImg*labelIdx                   # add biggest component to end img (imgNew)
+
+        replaceMask = (img != imgNew)                           # check deleted elements
+        # replaceMat = img2*replaceMask + imgNew
+        replaceMat = sitk.GetArrayFromImage(img2)*sitk.GetArrayFromImage(replaceMask) + sitk.GetArrayFromImage(imgNew)
+        replaceEnd = sitk.GetImageFromArray(replaceMat)
+        replaceEnd.CopyInformation(img)
+
+        #sv.multi_slice_viewer(replaceEnd)
+
+        sitk.WriteImage(replaceEnd, os.path.join(directory + filename + '_replace.mha'), True)
+
+
+
+
+            # for i in range(0, componentList[labelIdx-1]):       # take n biggest components
+            #     print(i+1)
+            #     bImg = (rImg == i+1) * labelIdx
+            #     imgNew = imgNew + bImg
+
+
 
 
 
@@ -61,7 +84,7 @@ for filename in os.listdir(directory):
         # - 3 (Hippocampus)
         # - 4 (Amygdala)
         # - 5 (Thalamus)
-        labelNames = ["background", "white matter", "grey matter", "hippocampus", "amygdala", "thalamus"]
+        #labelNames = ["background", "white matter", "grey matter", "hippocampus", "amygdala", "thalamus"]
 
         # BinaryThresholt(img, 4, 4 ,1 ,0) 4--> wished label, 1-->goal label, 0-->background
         #TODO: imagestatisticsfilter (for sorting labels)
