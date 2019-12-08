@@ -4,7 +4,7 @@ Image post-processing aims to alter images such that they depict a desired repre
 """
 import warnings
 
-# import numpy as np
+import numpy as np
 # import pydensecrf.densecrf as crf
 # import pydensecrf.utils as crf_util
 import pymia.filtering.filter as pymia_fltr
@@ -27,25 +27,51 @@ class ImagePostProcessing(pymia_fltr.IFilter):
         Returns:
             sitk.Image: The post-processed image.
         """
+        probability = sitk.Image(image)
+        probability.CopyInformation(image)
 
-        imgNew = sitk.Image(image)
-        imgNew.CopyInformation(image)
+        npImage = np.argmax(sitk.GetArrayFromImage(probability), axis=-1)   # restore original label image
+        image = sitk.GetImageFromArray(npImage)
+
+        p = sitk.GetArrayFromImage(probability)
+
+        # Delete 1st maximum
+        for x in range(p.shape[0]):
+            for y in range(p.shape[1]):
+                for z in range(p.shape[2]):
+                    idx = npImage[x, y, z]
+                    p[x, y, z, idx] = 0
+        # Select new maximum in probability (2nd most probable label)
+        p2 = np.argmax(p, axis=-1)
+        img2 = sitk.GetImageFromArray(p2)
+
+        imgNew = sitk.Image(img)
+        imgNew.CopyInformation(img)
         imgNew = imgNew * 0
+        tmpImg = sitk.Image(img) * 0
 
-        componentList = [1, 1, 2, 1, 1]
+        componentList = [1, 1, 2, 1, 1]  # N components for label 1-5
 
         for labelIdx in range(1, 6):
-            ccFilt = sitk.ConnectedComponentImageFilter()  # generate multiple labels
-            ccImg = ccFilt.Execute(image == labelIdx)
+            ccFilt = sitk.ConnectedComponentImageFilter()  # generate labels for all cc within anatomy label
+            ccImg = ccFilt.Execute(img == labelIdx)
             rFilt = sitk.RelabelComponentImageFilter()  # sort labels by size
             rImg = rFilt.Execute(ccImg)
 
+            tmpImg = sitk.Image(img) * 0
             for i in range(0, componentList[labelIdx - 1]):  # take n biggest components
                 print(i + 1)
-                bImg = (rImg == i + 1) * labelIdx
-                imgNew = imgNew + bImg
+                tmpImg = tmpImg + (rImg == i + 1)
 
-        return imgNew
+            imgNew = imgNew + tmpImg * labelIdx  # add biggest component to end img (imgNew)
+
+        replaceMask = (img != imgNew)  # check deleted elements
+        # replaceMat = img2*replaceMask + imgNew
+        replaceMat = sitk.GetArrayFromImage(img2) * sitk.GetArrayFromImage(replaceMask) + sitk.GetArrayFromImage(imgNew)
+        replaceEnd = sitk.GetImageFromArray(replaceMat)
+        replaceEnd.CopyInformation(img)
+
+        return replaceEnd
 
 
     def __str__(self):

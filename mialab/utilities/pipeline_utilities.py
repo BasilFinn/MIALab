@@ -281,7 +281,7 @@ def post_process(img: structure.BrainImage, segmentation: sitk.Image, probabilit
                                                      img.images[structure.BrainImageTypes.T2w],
                                                      probability), len(pipeline.filters) - 1)
 
-    return pipeline.execute(segmentation)
+    return pipeline.execute(probability)
 
 
 def init_evaluator(directory: str, result_file_name: str = 'results.csv') -> eval_.Evaluator:
