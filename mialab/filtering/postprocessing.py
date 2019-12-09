@@ -27,28 +27,29 @@ class ImagePostProcessing(pymia_fltr.IFilter):
         Returns:
             sitk.Image: The post-processed image.
         """
+
+        npImage = sitk.GetArrayFromImage(image)
+        npImg = np.argmax(npImage, axis=-1)
+        img = sitk.GetImageFromArray(npImg)
+
         probability = sitk.Image(image)
         probability.CopyInformation(image)
 
-        npImage = np.argmax(sitk.GetArrayFromImage(probability), axis=-1)   # restore original label image
-        image = sitk.GetImageFromArray(npImage)
 
         p = sitk.GetArrayFromImage(probability)
 
         # Delete 1st maximum
-        for x in range(p.shape[0]):
-            for y in range(p.shape[1]):
-                for z in range(p.shape[2]):
-                    idx = npImage[x, y, z]
-                    p[x, y, z, idx] = 0
+        for x in range(npImage.shape[0]):
+            for y in range(npImage.shape[1]):
+                for z in range(npImage.shape[2]):
+                    idx = npImg[x, y, z]
+                    npImage[x, y, z, idx] = 0
         # Select new maximum in probability (2nd most probable label)
-        p2 = np.argmax(p, axis=-1)
+        p2 = np.argmax(npImage, axis=-1)
         img2 = sitk.GetImageFromArray(p2)
 
-        imgNew = sitk.Image(img)
+        imgNew = sitk.Image(img.GetSize(), sitk.sitkUInt8) * 0
         imgNew.CopyInformation(img)
-        imgNew = imgNew * 0
-        tmpImg = sitk.Image(img) * 0
 
         componentList = [1, 1, 2, 1, 1]  # N components for label 1-5
 
@@ -58,13 +59,13 @@ class ImagePostProcessing(pymia_fltr.IFilter):
             rFilt = sitk.RelabelComponentImageFilter()  # sort labels by size
             rImg = rFilt.Execute(ccImg)
 
-            tmpImg = sitk.Image(img) * 0
+            tmpImg = sitk.Image(img.GetSize(), sitk.sitkUInt8) * 0
             for i in range(0, componentList[labelIdx - 1]):  # take n biggest components
-                print(i + 1)
-                tmpImg = tmpImg + (rImg == i + 1)
+                tmpImg = tmpImg + (rImg == (i + 1))
 
             imgNew = imgNew + tmpImg * labelIdx  # add biggest component to end img (imgNew)
 
+        imgNew = sitk.Cast(imgNew, img.GetPixelID())
         replaceMask = (img != imgNew)  # check deleted elements
         # replaceMat = img2*replaceMask + imgNew
         replaceMat = sitk.GetArrayFromImage(img2) * sitk.GetArrayFromImage(replaceMask) + sitk.GetArrayFromImage(imgNew)

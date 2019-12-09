@@ -31,12 +31,14 @@ def main():
     result = pd.concat(frame)
 
     plt.figure(1)
-    result.boxplot(by='LABEL', column='DICE')
+    ax = result.boxplot(by='LABEL', column='DICE')
+    ax.set_ylim([0, 1])
     plt.title("N=10")
     plt.suptitle("Boxplot DICE")
 
     plt.figure(2)
-    result.boxplot(by='LABEL', column='HDRFDST')
+    ax = result.boxplot(by='LABEL', column='HDRFDST')
+    ax.set_ylim([0, 18])
     plt.title("N=10")
     plt.suptitle("Boxplot Hausdorff")
 
