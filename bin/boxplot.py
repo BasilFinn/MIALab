@@ -22,7 +22,7 @@ def main():
     # alternative: instead of manually loading/reading the csv file you could also use the pandas package
     # but you will need to install it first ('pip install pandas') and import it to this file ('import pandas as pd')
 
-    data_org = pd.read_csv('mia-result/2019-11-04-11-17-42/results.csv', delimiter=';')  # , dtype={'ID': int, 'LABEL': str, 'DICE': float, 'HDRFDST': float}
+    data_org = pd.read_csv('mia-result/2019-12-09-13-00-39_CC_replace/results.csv', delimiter=';')  # , dtype={'ID': int, 'LABEL': str, 'DICE': float, 'HDRFDST': float}
     data   = data_org.loc[data_org['ID'].str.contains('-PP')==False]
     dataPP = data_org.loc[data_org['ID'].str.contains('-PP')]
     dataPP['LABEL'] = dataPP['LABEL'] + "-PP"
@@ -37,8 +37,8 @@ def main():
     plt.suptitle("Boxplot DICE")
 
     plt.figure(2)
-    ax = result.boxplot(by='LABEL', column='HDRFDST')
-    ax.set_ylim([0, 18])
+    ax2 = result.boxplot(by='LABEL', column='HDRFDST')
+    ax2.set_ylim([0, 18])
     plt.title("N=10")
     plt.suptitle("Boxplot Hausdorff")
 
