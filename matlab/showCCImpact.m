@@ -25,7 +25,7 @@ for lbl_idx = 1:length(lbl_list)
 %     xlabel('Number connected components');
 %     ylabel('HDRFDST');
     figure(1);
-    plot(noCC,diffHDRFDST,'o.-'); hold on;
+    plot(noCC,diffHDRFDST,'o-'); hold on;
        
 end
     xlabel('Number connected components');
