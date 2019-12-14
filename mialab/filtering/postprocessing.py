@@ -41,8 +41,10 @@ class ImagePostProcessing(pymia_fltr.IFilter):
             rImg = rFilt.Execute(ccImg)
 
             for i in range(0, componentList[labelIdx - 1]):  # take n biggest components
-                print(i + 1)
-                bImg = (rImg == i + 1) * labelIdx
+                # print(i+1)
+                bImg = (rImg == i + 1)
+                clImg = sitk.BinaryMorphologicalClosing(bImg)
+                bImg = clImg * labelIdx
                 imgNew = imgNew + bImg
 
         return imgNew
