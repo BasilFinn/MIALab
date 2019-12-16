@@ -14,7 +14,8 @@ for lbl = 1:length(lbl_list)
         t_pp = t_pp(contains(t_pp.LABEL,lbl_list{lbl}),:);
         
         % Fill table content
-        diffHDRFDST(idx) = median(t_org.HDRFDST)-median(t_pp.HDRFDST);
+        diffHDRFDST(idx) = median(t_pp.HDRFDST)-median(t_org.HDRFDST);
+%         diffHDRFDST(idx) = median(t_pp.DICE)-median(t_org.DICE);
         csvSize{idx}  = csv.name(9:10);
         csvDepth{idx} = csv.name(12:13);
         
@@ -36,5 +37,6 @@ for lbl = 1:length(lbl_list)
     ylabel('Tree Depth');
     cb = colorbar;
     title(cb,'HDRFDST')
+%     title(cb,'DICE')
     
 end
