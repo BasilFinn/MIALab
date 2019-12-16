@@ -4,7 +4,7 @@ Image post-processing aims to alter images such that they depict a desired repre
 """
 import warnings
 
-# import numpy as np
+import numpy as np
 # import pydensecrf.densecrf as crf
 # import pydensecrf.utils as crf_util
 import pymia.filtering.filter as pymia_fltr
@@ -31,7 +31,8 @@ class ImagePostProcessing(pymia_fltr.IFilter):
         imgNew = sitk.Image(image)
         imgNew.CopyInformation(image)
         imgNew = imgNew * 0
-
+        imtmp = sitk.Image(image)
+        npNew = sitk.GetArrayFromImage(imgNew)
         componentList = [1, 1, 2, 1, 1]
 
         for labelIdx in range(1, 6):
@@ -41,11 +42,17 @@ class ImagePostProcessing(pymia_fltr.IFilter):
             rImg = rFilt.Execute(ccImg)
 
             for i in range(0, componentList[labelIdx - 1]):  # take n biggest components
-                # print(i+1)
                 bImg = (rImg == i + 1)
                 clImg = sitk.BinaryMorphologicalClosing(bImg)
-                bImg = clImg * labelIdx
-                imgNew = imgNew + bImg
+                bImg = clImg
+
+                mask = sitk.GetArrayFromImage(imgNew) & sitk.GetArrayFromImage(bImg)
+                bImgMasked = sitk.GetArrayFromImage(bImg) * np.bitwise_not(mask)/mask.max()
+                # imtmp = sitk.Image(imgNew)
+                # imtmp = sitk.GetImageFromArray(bImgMasked)
+                npNew = npNew + bImgMasked * labelIdx
+
+        imgNew = sitk.GetImageFromArray(npNew)
 
         return imgNew
 
