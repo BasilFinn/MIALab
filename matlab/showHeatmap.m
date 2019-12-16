@@ -29,11 +29,12 @@ for lbl = 1:length(lbl_list)
     for i=1:length(x)
         img(x(i)-9:x(i), y(i)-9:y(i)) = z(i);
     end
-    figure(lbl);
+    figure(lbl+100);
     imagesc(img);
     title(lbl_list{lbl});
     xlabel('Tree Size');
     ylabel('Tree Depth');
-    colorbar;
+    cb = colorbar;
+    title(cb,'HDRFDST')
     
 end
