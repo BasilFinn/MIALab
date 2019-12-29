@@ -33,7 +33,7 @@ class ImagePostProcessing(pymia_fltr.IFilter):
         imgNew = imgNew * 0
 
         # componentList = [1, 1, 2, 1, 1]
-        componentList = [20, 20, 21, 20, 20]
+        componentList = [1, 1, 1, 1, 1]
 
         for labelIdx in range(1, 6):
             ccFilt = sitk.ConnectedComponentImageFilter()  # generate multiple labels
