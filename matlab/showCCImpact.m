@@ -33,7 +33,7 @@ for lbl_idx = 1:length(lbl_list)
     boxplot(bp_data,bp_noCC)
     title(lbl_list{lbl_idx});
     xlabel('Number connected components');
-    ylabel('HDRFDST');
+    ylabel('HDRFDST [mm]');
 
 %     figure(1);
 %     plot(noCC,diffHDRFDST,'o-'); hold on;

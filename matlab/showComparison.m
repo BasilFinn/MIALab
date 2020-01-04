@@ -23,6 +23,6 @@ for lbl_idx = 1:length(lbl_list)
     boxplot(data,noCC);
     title(lbl_list{lbl_idx});
     xlabel('Processing type');
-    ylabel('HDRFDST');
+    ylabel('HDRFDST [mm]');
        
 end
